@@ -43,11 +43,9 @@ while (step<300):
     print("step: ",step," angle: ",angle)
     if pygame.event.peek(pygame.QUIT):  # detect user quit
         break
-<<<<<<< HEAD
     if (angle == 95):
-=======
+        swap = False
     if (angle == 20):
->>>>>>> git restored?
         swap = True
     if (angle == -5):
         swap = False

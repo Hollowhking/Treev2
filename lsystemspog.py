@@ -13,8 +13,20 @@ BLUE = (135, 206, 235)
 BROWN = (139, 70, 19)
 
 SYSRULES = {}  # generator system rules for l-system
+X_RULES = []
 
+#set up text:
+class MyText():
+    def __init__(self, color, background=WHITE, antialias=True, fontname="comicsansms", fontsize=24):
+        pygame.font.init()
+        self.font = pygame.font.SysFont(fontname, fontsize)
+        self.color = color
+        self.background = background
+        self.antialias = antialias
 
+    def draw(self, str1, screen, pos):
+        text = self.font.render(str1, self.antialias, self.color, self.background)
+        screen.blit(text, pos)
 
 def derivation(axiom, steps):
     derived = [axiom]  # seed
@@ -26,6 +38,9 @@ def derivation(axiom, steps):
 
 
 def rule(cmd):
+    #if (cmd == 'X'):
+       #x = random.random()
+    #   return random.choice(X_RULES)
     if cmd in SYSRULES:
         return SYSRULES[cmd]
     return cmd
@@ -41,8 +56,9 @@ class branch:
         self.endx = endx
         self.endy = endy
     def drawbranch(self, screen, seg_thickness):
-        pygame.draw.line(screen,BROWN,(self.startx,self.starty),(self.endx,self.endy),int(seg_thickness))
-    def updatebranch(self, angle):
+        pygame.draw.line(screen,BLACK,(self.startx,self.starty),(self.endx,self.endy),int(seg_thickness))
+
+    def updatebranch(self, angle):#FIX
         x2 = (self.seg_length*2)/2.0*sin(radians(angle))
         y2 = (self.seg_length*2)/2.0*cos(radians(angle))
         self.endx = self.endx - x2
@@ -52,34 +68,51 @@ class branch:
 def main():
     #-Init pygame stuff:----
     pygame.init()
-    window_length = 600
+    window_length = 700
     screen = pygame.display.set_mode((window_length, window_length))
-    screen.fill(BLUE)
+    screen.fill(WHITE)
+    text = MyText(BLACK)
     #-----------------------
     #-l systems set up string----
-    #rule = "F->FF"
-    #rule = "F->F[+F][-F]"
+    # rule = "F->FF"
+    # #rule = "F->F[+F][-F]"
+    # #rule = "F->F[-FF]+[FFF]-FF[-F-F]"
+    # key, value = rule.split("->")
+    # SYSRULES[key] = value
     rule = "F->FF"
-    key, value = rule.split("->")
+    key,value = rule.split("->")
     SYSRULES[key] = value
-    #rule = "X->F[+X]F[-X]+X"
-    #rule = "X->F[+X]F[--FX]FX"
-    #rule = "X->FF+[-F-XF-X][XXX][+FF][--XF[+X]][+++F-X]"
-    #rule = "X->F[+FX]+[FX]-F[-FX]"
-    #rule = "X->[+FX--FXFF]"
-    rule = "X->FF[+FFX][-FFX]"
+    #rule = "X->F[+XF]F[-X]+X"
+    # rule = "X->F[+X]F[--FX]FX"
+    rule = "X->F[+X]F[-FX]FX"
+    key,value = rule.split("->")
+    X_RULES.append(value)
+    rule = "X->F[+FX]+[FX]-F[-FX]"
     key, value = rule.split("->")
+    X_RULES.append(value)
+    rule = "X->[+FX-FXFF][-FXX]"
+    key, value = rule.split("->")
+    X_RULES.append(value)
+    #rule = "X->FF[+FFX][-FFX]"
+    #rule = "X->F-[[X]+X]+F[+FX]-X"
+
+    rule = "X->F[+X]F[-FX]FX"
+    #rule = "X->[-FX]+FX"
+    key, value = rule.split("->")
+    X_RULES.append(value)
+
     SYSRULES[key] = value
 
     axiom = sys.argv[1]
     iterations = int(sys.argv[2])
-    angle = float(sys.argv[3])
+    da = float(sys.argv[3])
     t=pygame.time.get_ticks()
     posx = window_length/2.
     posy = window_length
 
     model = derivation(axiom, iterations)  # axiom (initial string), nth iterations
     fullstring = []
+    #print(model)
     for i in range(len(model)):
         for j in model[i]:
             fullstring.append(j)
@@ -87,7 +120,7 @@ def main():
     grow_angle = -90
     seg_length = 10
     seg_thickness = 1
-    thickness_step = 0.2
+    thickness_step = 0.1
 
     clock_ticks = pygame.time.get_ticks()
 
@@ -102,17 +135,17 @@ def main():
     sway_angle = 0
     swap = False
     #-----------------
+    print(fullstring)
     for cmd in fullstring:
         if cmd == 'F':
             seg_length = random.randint(15,25)
+            grow_angle = random.randint(grow_angle-5,grow_angle+5)
+            dx = cos(radians(grow_angle))*seg_length
+            dy = sin(radians(grow_angle))*seg_length
 
-            dx = int(cos(radians(grow_angle))*seg_length)
-            dy = int(sin(radians(grow_angle))*seg_length)
-
-            ang = abs(grow_angle)
             curbranch = branch(branchcount, seg_length, posx, posy, posx+dx, posy+dy)
             listofbranches.append(curbranch)
-            curbranch.drawbranch(screen, seg_thickness)
+            curbranch.drawbranch(screen, int(seg_thickness))
             pygame.display.update((posx-1,posy-1,posx+dx+1,posy+dy+1))
             branchcount += 1
             #seg_thickness -= thickness_step
@@ -120,30 +153,34 @@ def main():
             posy = posy+dy
 
         elif cmd == '+':
-            grow_angle += angle
+            grow_angle += da
         elif cmd == '-':
-            grow_angle -= angle
+            grow_angle -= da
 
         elif cmd == '[':
+            #seg_thickness -= thickness_step
             saving_endingofbraches.append((posx,posy))
             saving_angle.append(grow_angle)
         elif cmd == ']':
+            #seg_thickness += 1
             posx,posy = saving_endingofbraches.pop()
             grow_angle = saving_angle.pop()
         print(pygame.time.get_ticks()-t)
 
     try:
-        for i in listofbranches:
-            print("branch num: ",i.id, " start location: ", i.startx,",",i.starty," end location: ",i.endx,",",i.endy)
-            pygame.draw.circle(screen, RED, (int(i.endx),int(i.endy)), 2)
+
+        # for i in listofbranches:
+        #     print("branch num: ",i.id, " start location: ", i.startx,",",i.starty," end location: ",i.endx,",",i.endy)
+        #     pygame.draw.circle(screen, RED, (int(i.endx),int(i.endy)), 2)
+        text.draw("Iterations = %f" % iterations, screen, (10,10))
 
         while step<200:
             clock.tick(30)
-            for i in listofbranches:
-                print("update branch: ",i.id," step num: ",step)
-                #updatebranch:
-                i.updatebranch(angle)
-                i.drawbranch(screen, seg_thickness)
+            # for i in listofbranches:
+            #     print("update branch: ",i.id," step num: ",step, " new end: ",i.endx,",",i.endy, " with angle: ",sway_angle)
+            #     #updatebranch:
+            #     #i.updatebranch(sway_angle) #<------THIS COMMAND LAGS THE SYSTEM!
+            #     i.drawbranch(screen, seg_thickness)
             event = pygame.event.wait()
             if event.type == pygame.QUIT:
                 break
@@ -151,22 +188,22 @@ def main():
                 if event.key == pygame.K_ESCAPE or event.unicode == 'q':
                     break
             pygame.display.flip()
-            #print(step)
+            print(step)
             #update
-            if (sway_angle == 20):
-                swap = True
-            if (sway_angle == -5):
-                swap = False
-            if (swap):
-                angle = sway_angle-1
-            else:
-                angle = sway_angle+1
-            screen.fill(BLUE)
+            # if (sway_angle == 20):
+            #     swap = True
+            # if (sway_angle == -5):
+            #     swap = False
+            # if (swap):
+            #     sway_angle = sway_angle-1
+            # else:
+            #     sway_angle = sway_angle+1
+            #screen.fill(WHITE)
             #----------------
             step += 1
     finally:
         pygame.quit()
-        system.exit(0)
+        sys.exit(0)
 
 if __name__ == '__main__':
     main()
