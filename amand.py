@@ -1,46 +1,49 @@
 import pygame
-import random
+import math
 
-pygame.init()
-
-# set colours
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-
-clock = pygame.time.Clock()
-
-def main():
-
-    print ('Press q to quit')
-    random.seed(0)
-
+def animate_rotating_line(point, radius, angle):
     pygame.init()
 
-# Set up the drawing window
-screen = pygame.display.set_mode([500, 500])
-line_color = (255, 0, 0)
+    # Set up the display window
+    width, height = 640, 480
+    screen = pygame.display.set_mode((width, height))
+    pygame.display.set_caption("Rotating Line")
 
-# Run until the user asks to quit
-running = True
-while running:
+    # Set up the clock
+    clock = pygame.time.Clock()
 
-    # Did the user click the window close button?
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    # Set up the line
+    line_length = 100
+    line_color = (255, 255, 255)
 
-    # Fill the background with white
-    screen.fill((255, 255, 255))
-    #X → F − [ [ X ] + X ] + F [ + F X ] − X
-    # Draw a solid blue circle in the center
-    pygame.draw.line(screen, line_color, (100, 200), (150, 250), 10)
-    pygame.draw.circle(screen, (0, 0, 255), (250, 250), 75)
+    # Run the animation loop
+    while True:
+        # Handle events
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
 
-    # Flip the display
-    pygame.display.flip()
+        # Calculate the endpoint of the line
+        x = point[0] + radius * math.cos(angle)
+        y = point[1] + radius * math.sin(angle)
+        endpoint = (x, y)
 
-# Done! Time to quit.
-pygame.quit()
+        # Draw the line
+        screen.fill((0, 0, 0))
+        pygame.draw.line(screen, line_color, point, endpoint, 2)
+
+        # Update the angle for the next frame
+        angle += 0.01
+
+        # Update the display
+        pygame.display.flip()
+
+        # Wait for the next frame
+        clock.tick(60)
+
+# Example usage
+point = (320, 240)
+radius = 100
+angle = 0
+animate_rotating_line(point, radius, angle)

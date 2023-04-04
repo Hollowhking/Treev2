@@ -3,6 +3,7 @@ from pygame.locals import *
 from math import *
 import sys
 import random
+import math
 
 # set colours
 BLACK = (0, 0, 0)
@@ -55,14 +56,15 @@ class branch:
         self.starty = starty
         self.endx = endx
         self.endy = endy
+        self.tempx = 0
+        self.tempy = 0
     def drawbranch(self, screen, seg_thickness):
-        pygame.draw.line(screen,BLACK,(self.startx,self.starty),(self.endx,self.endy),int(seg_thickness))
+        pygame.draw.line(screen,BLACK,(self.startx,self.starty),(self.endx+self.tempx,self.endy+self.tempy),int(seg_thickness))
 
     def updatebranch(self, angle):#FIX
-        x2 = (self.seg_length*2)/2.0*sin(radians(angle))
-        y2 = (self.seg_length*2)/2.0*cos(radians(angle))
-        self.endx = self.endx - x2
-        self.endy = self.endy - y2
+        angle_rad = math.radians(angle)
+        self.endx = self.startx + self.seg_length * math.cos(angle_rad)
+        self.endy = self.starty + self.seg_length * math.sin(angle_rad)
 
 
 def main():
@@ -70,6 +72,7 @@ def main():
     pygame.init()
     window_length = 700
     screen = pygame.display.set_mode((window_length, window_length))
+    pygame.display.set_caption("Generating Trees")
     screen.fill(WHITE)
     text = MyText(BLACK)
     #-----------------------
@@ -142,8 +145,9 @@ def main():
             grow_angle = random.randint(grow_angle-5,grow_angle+5)
             dx = cos(radians(grow_angle))*seg_length
             dy = sin(radians(grow_angle))*seg_length
+            distance = math.sqrt((((posx+dx)-posx)**2)+(((posy+dy)-posy)**2))
 
-            curbranch = branch(branchcount, seg_length, posx, posy, posx+dx, posy+dy)
+            curbranch = branch(branchcount, distance, posx, posy, posx+dx, posy+dy)
             listofbranches.append(curbranch)
             curbranch.drawbranch(screen, int(seg_thickness))
             pygame.display.update((posx-1,posy-1,posx+dx+1,posy+dy+1))
@@ -172,15 +176,15 @@ def main():
         # for i in listofbranches:
         #     print("branch num: ",i.id, " start location: ", i.startx,",",i.starty," end location: ",i.endx,",",i.endy)
         #     pygame.draw.circle(screen, RED, (int(i.endx),int(i.endy)), 2)
-        text.draw("Iterations = %f" % iterations, screen, (10,10))
-
+        # text.draw("Iterations = %f" % iterations, screen, (10,10))
+        sway_angle = -90
         while step<200:
             clock.tick(30)
-            # for i in listofbranches:
-            #     print("update branch: ",i.id," step num: ",step, " new end: ",i.endx,",",i.endy, " with angle: ",sway_angle)
-            #     #updatebranch:
-            #     #i.updatebranch(sway_angle) #<------THIS COMMAND LAGS THE SYSTEM!
-            #     i.drawbranch(screen, seg_thickness)
+            for i in listofbranches:
+                print("update branch: ",i.id," step num: ",step, " new end: ",i.endx,",",i.endy, " with angle: ",sway_angle)
+                #updatebranch:
+                i.updatebranch(sway_angle) #<------THIS COMMAND LAGS THE SYSTEM!
+                i.drawbranch(screen, seg_thickness)
             event = pygame.event.wait()
             if event.type == pygame.QUIT:
                 break
@@ -188,17 +192,20 @@ def main():
                 if event.key == pygame.K_ESCAPE or event.unicode == 'q':
                     break
             pygame.display.flip()
-            print(step)
+            #print(step)
             #update
-            # if (sway_angle == 20):
-            #     swap = True
-            # if (sway_angle == -5):
-            #     swap = False
-            # if (swap):
-            #     sway_angle = sway_angle-1
-            # else:
-            #     sway_angle = sway_angle+1
-            #screen.fill(WHITE)
+
+            if (sway_angle == -95):
+                print("SWAP TO NEG")
+                swap = True
+            if (sway_angle == -120):
+                print("SWAP TO POS")
+                swap = False
+            if (swap):
+                sway_angle = sway_angle-1
+            else:
+                sway_angle = sway_angle+1
+            screen.fill(WHITE)
             #----------------
             step += 1
     finally:
