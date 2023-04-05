@@ -59,12 +59,13 @@ class branch:
         self.tempx = 0
         self.tempy = 0
     def drawbranch(self, screen, seg_thickness):
-        pygame.draw.line(screen,BLACK,(self.startx,self.starty),(self.endx+self.tempx,self.endy+self.tempy),int(seg_thickness))
+        pygame.draw.line(screen,BLACK,(self.startx,self.starty),(self.endx,self.endy),int(seg_thickness))
 
-    def updatebranch(self, angle):#FIX
-        angle_rad = math.radians(angle)
-        self.endx = self.startx + self.seg_length * math.cos(angle_rad)
-        self.endy = self.starty + self.seg_length * math.sin(angle_rad)
+    def updatebranch(self, newstartx, newstarty, newendx, newendy):#FIX
+        self.startx = newstartx
+        self.starty = newstarty
+        self.endx = newendx
+        self.endy = newendy
 
 
 def main():
@@ -131,7 +132,6 @@ def main():
     saving_endingofbraches = []
     listofbranches = []
     branchcount = 0
-    step = 0
 
     #init update variables:
     clock = pygame.time.Clock()
@@ -139,6 +139,8 @@ def main():
     swap = False
     #-----------------
     print(fullstring)
+    step = 0
+
     for cmd in fullstring:
         if cmd == 'F':
             seg_length = random.randint(15,25)
@@ -151,6 +153,8 @@ def main():
             listofbranches.append(curbranch)
             curbranch.drawbranch(screen, int(seg_thickness))
             pygame.display.update((posx-1,posy-1,posx+dx+1,posy+dy+1))
+
+
             branchcount += 1
             #seg_thickness -= thickness_step
             posx = posx+dx
@@ -162,29 +166,34 @@ def main():
             grow_angle -= da
 
         elif cmd == '[':
-            #seg_thickness -= thickness_step
             saving_endingofbraches.append((posx,posy))
             saving_angle.append(grow_angle)
         elif cmd == ']':
-            #seg_thickness += 1
             posx,posy = saving_endingofbraches.pop()
             grow_angle = saving_angle.pop()
-        print(pygame.time.get_ticks()-t)
+        #print(pygame.time.get_ticks()-t)
+
 
     try:
+        #note parents of all branches:
+
 
         # for i in listofbranches:
         #     print("branch num: ",i.id, " start location: ", i.startx,",",i.starty," end location: ",i.endx,",",i.endy)
         #     pygame.draw.circle(screen, RED, (int(i.endx),int(i.endy)), 2)
         # text.draw("Iterations = %f" % iterations, screen, (10,10))
         sway_angle = -90
+
+
+
         while step<200:
             clock.tick(30)
-            for i in listofbranches:
-                print("update branch: ",i.id," step num: ",step, " new end: ",i.endx,",",i.endy, " with angle: ",sway_angle)
+            #screen.fill(WHITE)
+            #for i in listofbranches:
+                #print("update branch: ",i.id," step num: ",step, " new end: ",i.endx,",",i.endy, " with angle: ",sway_angle)
                 #updatebranch:
-                i.updatebranch(sway_angle) #<------THIS COMMAND LAGS THE SYSTEM!
-                i.drawbranch(screen, seg_thickness)
+                #i.updatebranch(sway_angle) #<------THIS COMMAND LAGS THE SYSTEM!
+                #i.drawbranch(screen, seg_thickness)
             event = pygame.event.wait()
             if event.type == pygame.QUIT:
                 break
@@ -196,16 +205,15 @@ def main():
             #update
 
             if (sway_angle == -95):
-                print("SWAP TO NEG")
+                #print("SWAP TO NEG")
                 swap = True
             if (sway_angle == -120):
-                print("SWAP TO POS")
+                #print("SWAP TO POS")
                 swap = False
             if (swap):
                 sway_angle = sway_angle-1
             else:
                 sway_angle = sway_angle+1
-            screen.fill(WHITE)
             #----------------
             step += 1
     finally:
