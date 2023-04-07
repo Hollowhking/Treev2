@@ -15,6 +15,8 @@ BROWN = (139, 70, 19)
 
 SYSRULES = {}  # generator system rules for l-system
 X_RULES = []
+listofbranches = []
+curimg = 1
 
 #set up text:
 class MyText():
@@ -39,9 +41,9 @@ def derivation(axiom, steps):
 
 
 def rule(cmd):
-    #if (cmd == 'X'):
-       #x = random.random()
-    #   return random.choice(X_RULES)
+    if (cmd == 'X'):
+      #x = random.random()
+      return random.choice(X_RULES)
     if cmd in SYSRULES:
         return SYSRULES[cmd]
     return cmd
@@ -67,34 +69,88 @@ class branch:
         self.endx = newendx
         self.endy = newendy
 
+def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
+    #Add to drawtree
+    saving_angle = []
+    saving_endingofbraches = []
+    branchcount = 0
 
-def main():
+    grow_angle = -90
+    for cmd in fullstring:
+        if cmd == 'F':
+            seg_length = random.randint(15,25)
+            grow_angle = random.randint(grow_angle-5,grow_angle+5)
+            dx = cos(radians(grow_angle))*seg_length
+            dy = sin(radians(grow_angle))*seg_length
+            distance = math.sqrt((((posx+dx)-posx)**2)+(((posy+dy)-posy)**2))
+
+            curbranch = branch(branchcount, distance, posx, posy, posx+dx, posy+dy)
+            listofbranches.append(curbranch)
+            if (seg_thickness < 1):
+                curbranch.drawbranch(screen, 1)
+            else:
+                curbranch.drawbranch(screen, int(seg_thickness))
+
+            pygame.display.update((posx-1,posy-1,posx+dx+1,posy+dy+1))
+            #print (grow_angle)
+
+            if (branchcount*iterations < iterations*5):
+                grow_angle = -90
+
+            branchcount += 1
+            posx = posx+dx
+            posy = posy+dy
+
+        elif cmd == '+':
+            grow_angle += da
+        elif cmd == '-':
+            grow_angle -= da
+
+        elif cmd == '[':
+            seg_thickness -= 1
+            saving_endingofbraches.append((posx,posy))
+            saving_angle.append(grow_angle)
+        elif cmd == ']':
+            posx,posy = saving_endingofbraches.pop()
+            grow_angle = saving_angle.pop()
+
+def maketree(axiom, iterations):
+    model = derivation(axiom, iterations)  # axiom (initial string), nth iterations
+    fullstringx = []
+    #print(model)
+    for i in range(len(model)):
+        for j in model[i]:
+            fullstringx.append(j)
+    return fullstringx
+#-MAIN-------------------
+# def main():
+def drawying():
     #-Init pygame stuff:----
     pygame.init()
-    window_length = 700
-    screen = pygame.display.set_mode((window_length, window_length))
+    #window_length = 1224
+    #window_height = 720
+    window_length = 800
+    window_height = 800
+    screen = pygame.display.set_mode((window_length, window_height))
     pygame.display.set_caption("Generating Trees")
+
+    #backgroundimg = pygame.image.load('a-banner-with-a-simple-spring-landscape-a-meadow-with-green-grass-and-a-blue-sky-with-clouds.png')
+
     screen.fill(WHITE)
+    #screen.blit(backgroundimg, (0,0))
     text = MyText(BLACK)
     #-----------------------
     #-l systems set up string----
-    # rule = "F->FF"
-    # #rule = "F->F[+F][-F]"
-    # #rule = "F->F[-FF]+[FFF]-FF[-F-F]"
-    # key, value = rule.split("->")
-    # SYSRULES[key] = value
     rule = "F->FF"
     key,value = rule.split("->")
     SYSRULES[key] = value
-    #rule = "X->F[+XF]F[-X]+X"
-    # rule = "X->F[+X]F[--FX]FX"
-    rule = "X->F[+X]F[-FX]FX"
+    rule = "X->F[-X]F[+FX]FX"
     key,value = rule.split("->")
     X_RULES.append(value)
-    rule = "X->F[+FX]+[FX]-F[-FX]"
+    rule = "X->F-[[X]+X]+F[+FX]-X"
     key, value = rule.split("->")
     X_RULES.append(value)
-    rule = "X->[+FX-FXFF][-FXX]"
+    rule = "X->F-[-FX-FXFF][-FXX]"
     key, value = rule.split("->")
     X_RULES.append(value)
     #rule = "X->FF[+FFX][-FFX]"
@@ -109,91 +165,36 @@ def main():
 
     axiom = sys.argv[1]
     iterations = int(sys.argv[2])
-    da = float(sys.argv[3])
+    da = 20
     t=pygame.time.get_ticks()
-    posx = window_length/2.
-    posy = window_length
-
-    model = derivation(axiom, iterations)  # axiom (initial string), nth iterations
-    fullstring = []
-    #print(model)
-    for i in range(len(model)):
-        for j in model[i]:
-            fullstring.append(j)
-    #-----------------------------------
-    grow_angle = -90
-    seg_length = 10
-    seg_thickness = 1
-    thickness_step = 0.1
+    posix = window_length/2.
+    posiy = window_height
 
     clock_ticks = pygame.time.get_ticks()
 
-    saving_angle = []
-    saving_endingofbraches = []
-    listofbranches = []
-    branchcount = 0
+    seg_thickness = 1
 
     #init update variables:
     clock = pygame.time.Clock()
     sway_angle = 0
     swap = False
     #-----------------
-    print(fullstring)
     step = 0
 
-    for cmd in fullstring:
-        if cmd == 'F':
-            seg_length = random.randint(15,25)
-            grow_angle = random.randint(grow_angle-5,grow_angle+5)
-            dx = cos(radians(grow_angle))*seg_length
-            dy = sin(radians(grow_angle))*seg_length
-            distance = math.sqrt((((posx+dx)-posx)**2)+(((posy+dy)-posy)**2))
-
-            curbranch = branch(branchcount, distance, posx, posy, posx+dx, posy+dy)
-            listofbranches.append(curbranch)
-            curbranch.drawbranch(screen, int(seg_thickness))
-            pygame.display.update((posx-1,posy-1,posx+dx+1,posy+dy+1))
-
-
-            branchcount += 1
-            #seg_thickness -= thickness_step
-            posx = posx+dx
-            posy = posy+dy
-
-        elif cmd == '+':
-            grow_angle += da
-        elif cmd == '-':
-            grow_angle -= da
-
-        elif cmd == '[':
-            saving_endingofbraches.append((posx,posy))
-            saving_angle.append(grow_angle)
-        elif cmd == ']':
-            posx,posy = saving_endingofbraches.pop()
-            grow_angle = saving_angle.pop()
-        #print(pygame.time.get_ticks()-t)
+    #make tree:
+    for i in range(3):
+        posix = random.randint(20,window_length)
+        fullstring = maketree(axiom, iterations)
+        drawtree(screen, fullstring, posix, posiy, seg_thickness, da, iterations)
 
 
     try:
-        #note parents of all branches:
-
-
         # for i in listofbranches:
         #     print("branch num: ",i.id, " start location: ", i.startx,",",i.starty," end location: ",i.endx,",",i.endy)
         #     pygame.draw.circle(screen, RED, (int(i.endx),int(i.endy)), 2)
         # text.draw("Iterations = %f" % iterations, screen, (10,10))
-        sway_angle = -90
-
-
-
-        while step<200:
+        while step<80:
             clock.tick(30)
-            #screen.fill(WHITE)
-            #for i in listofbranches:
-                #print("update branch: ",i.id," step num: ",step, " new end: ",i.endx,",",i.endy, " with angle: ",sway_angle)
-                #updatebranch:
-                #i.updatebranch(sway_angle) #<------THIS COMMAND LAGS THE SYSTEM!
-                #i.drawbranch(screen, seg_thickness)
             event = pygame.event.wait()
             if event.type == pygame.QUIT:
                 break
@@ -202,23 +203,18 @@ def main():
                     break
             pygame.display.flip()
             #print(step)
-            #update
-
-            if (sway_angle == -95):
-                #print("SWAP TO NEG")
-                swap = True
-            if (sway_angle == -120):
-                #print("SWAP TO POS")
-                swap = False
-            if (swap):
-                sway_angle = sway_angle-1
-            else:
-                sway_angle = sway_angle+1
-            #----------------
             step += 1
     finally:
+        pygame.image.save(screen, ("Tree"+str(curimg)+".jpeg"))
         pygame.quit()
-        sys.exit(0)
+
+def main():
+
+    drawying()
+    curimg += 1
+    sys.exit(0)
+
+
 
 if __name__ == '__main__':
     main()
