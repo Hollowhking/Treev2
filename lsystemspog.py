@@ -76,14 +76,16 @@ def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
     branchcount = 0
 
     grow_angle = -90
+    screen.fill(WHITE)
     for cmd in fullstring:
-        time.sleep(0.001)
         if cmd == 'F':
             seg_length = random.randint(15,25)
             grow_angle = random.randint(grow_angle-5,grow_angle+5)
             dx = cos(radians(grow_angle))*seg_length
             dy = sin(radians(grow_angle))*seg_length
             distance = math.sqrt((((posx+dx)-posx)**2)+(((posy+dy)-posy)**2))
+
+            #screen.fill(WHITE)
 
             curbranch = branch(branchcount, distance, posx, posy, posx+dx, posy+dy)
             listofbranches.append(curbranch)
@@ -92,8 +94,9 @@ def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
             else:
                 curbranch.drawbranch(screen, int(seg_thickness))
 
-            pygame.display.update((posx-1,posy-1,posx+dx+1,posy+dy+1))
+            #pygame.display.update((posx-1,posy-1,posx+dx+1,posy+dy+1))
             #print (grow_angle)
+            pygame.display.update()
 
             if (branchcount*iterations < iterations*5):
                 grow_angle = -90
@@ -101,6 +104,7 @@ def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
             branchcount += 1
             posx = posx+dx
             posy = posy+dy
+            time.sleep(0.1)
 
         elif cmd == '+':
             grow_angle += da
