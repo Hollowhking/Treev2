@@ -4,6 +4,7 @@ from math import *
 import sys
 import random
 import math
+import time
 
 # set colours
 BLACK = (0, 0, 0)
@@ -16,7 +17,6 @@ BROWN = (139, 70, 19)
 SYSRULES = {}  # generator system rules for l-system
 X_RULES = []
 listofbranches = []
-curimg = 1
 
 #set up text:
 class MyText():
@@ -77,6 +77,7 @@ def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
 
     grow_angle = -90
     for cmd in fullstring:
+        time.sleep(0.001)
         if cmd == 'F':
             seg_length = random.randint(15,25)
             grow_angle = random.randint(grow_angle-5,grow_angle+5)
@@ -124,7 +125,7 @@ def maketree(axiom, iterations):
     return fullstringx
 #-MAIN-------------------
 # def main():
-def drawying():
+def drawying(curimg):
     #-Init pygame stuff:----
     pygame.init()
     #window_length = 1224
@@ -144,20 +145,20 @@ def drawying():
     rule = "F->FF"
     key,value = rule.split("->")
     SYSRULES[key] = value
+
     rule = "X->F[-X]F[+FX]FX"
     key,value = rule.split("->")
     X_RULES.append(value)
+
     rule = "X->F-[[X]+X]+F[+FX]-X"
     key, value = rule.split("->")
     X_RULES.append(value)
-    rule = "X->F-[-FX-FXFF][-FXX]"
+
+    rule = "X->F[-FX+FXFF][+FXX]"
     key, value = rule.split("->")
     X_RULES.append(value)
-    #rule = "X->FF[+FFX][-FFX]"
-    #rule = "X->F-[[X]+X]+F[+FX]-X"
 
     rule = "X->F[+X]F[-FX]FX"
-    #rule = "X->[-FX]+FX"
     key, value = rule.split("->")
     X_RULES.append(value)
 
@@ -182,7 +183,7 @@ def drawying():
     step = 0
 
     #make tree:
-    for i in range(3):
+    for i in range(1):
         posix = random.randint(20,window_length)
         fullstring = maketree(axiom, iterations)
         drawtree(screen, fullstring, posix, posiy, seg_thickness, da, iterations)
@@ -209,9 +210,10 @@ def drawying():
     pygame.quit()
 
 def main():
-
-    drawying()
-    curimg += 1
+    curimag = 1
+    for i in range(3):
+        drawying(curimag)
+        curimag += 1
     sys.exit(0)
 
 
