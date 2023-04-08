@@ -89,7 +89,7 @@ def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
             curbranch = branch(branchcount, distance, posx, posy, posx+dx, posy+dy)
             listofbranches.append(curbranch)
             if (seg_thickness < 1):
-                curbranch.drawbranch(screen, 1)
+                curbranch.drawbranch(screen, 2)
             else:
                 curbranch.drawbranch(screen, int(seg_thickness))
 
