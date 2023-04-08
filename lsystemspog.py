@@ -76,7 +76,6 @@ def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
     branchcount = 0
 
     grow_angle = -90
-    screen.fill(WHITE)
     for cmd in fullstring:
         if cmd == 'F':
             seg_length = random.randint(15,25)
@@ -187,6 +186,7 @@ def drawying(curimg):
     step = 0
 
     #make tree:
+    screen.fill(WHITE)
     for i in range(int(sys.argv[3])):
         posix = random.randint(20,window_length)
         fullstring = maketree(axiom, iterations)
