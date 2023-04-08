@@ -168,8 +168,8 @@ def drawying(curimg):
 
     SYSRULES[key] = value
 
-    axiom = sys.argv[1]
-    iterations = int(sys.argv[2])
+    axiom = "X"
+    iterations = int(sys.argv[1])
     da = 20
     t=pygame.time.get_ticks()
     posix = window_length/2.
@@ -177,7 +177,7 @@ def drawying(curimg):
 
     clock_ticks = pygame.time.get_ticks()
 
-    seg_thickness = 1
+    seg_thickness = int(sys.argv[2])
 
     #init update variables:
     clock = pygame.time.Clock()
@@ -187,7 +187,7 @@ def drawying(curimg):
     step = 0
 
     #make tree:
-    for i in range(1):
+    for i in range(int(sys.argv[3])):
         posix = random.randint(20,window_length)
         fullstring = maketree(axiom, iterations)
         drawtree(screen, fullstring, posix, posiy, seg_thickness, da, iterations)
