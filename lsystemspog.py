@@ -188,25 +188,25 @@ def drawying():
         drawtree(screen, fullstring, posix, posiy, seg_thickness, da, iterations)
 
 
-    try:
-        # for i in listofbranches:
-        #     print("branch num: ",i.id, " start location: ", i.startx,",",i.starty," end location: ",i.endx,",",i.endy)
-        #     pygame.draw.circle(screen, RED, (int(i.endx),int(i.endy)), 2)
-        # text.draw("Iterations = %f" % iterations, screen, (10,10))
-        while step<80:
-            clock.tick(30)
-            event = pygame.event.wait()
-            if event.type == pygame.QUIT:
+
+    # for i in listofbranches:
+    #     print("branch num: ",i.id, " start location: ", i.startx,",",i.starty," end location: ",i.endx,",",i.endy)
+    #     pygame.draw.circle(screen, RED, (int(i.endx),int(i.endy)), 2)
+    # text.draw("Iterations = %f" % iterations, screen, (10,10))
+    while step<80:
+        clock.tick(30)
+        event = pygame.event.wait()
+        if event.type == pygame.QUIT:
+            break
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE or event.unicode == 'q':
                 break
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE or event.unicode == 'q':
-                    break
-            pygame.display.flip()
-            #print(step)
-            step += 1
-    finally:
-        pygame.image.save(screen, ("Tree"+str(curimg)+".jpeg"))
-        pygame.quit()
+        pygame.display.flip()
+        #print(step)
+        step += 1
+
+    pygame.image.save(screen, ("Tree"+str(curimg)+".jpeg"))
+    pygame.quit()
 
 def main():
 
