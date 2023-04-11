@@ -19,8 +19,8 @@ $ python3 l_systems_sim.py {seq_thickness} {number of trees} {background include
 ```
 
 Command-line arguments explained:
-{seq_thickness} - The thickness of the trunk and descendent branches of the tree (ex. 10)
-{number of trees} - The number of trees to draw (ex. 3)
-{background included - 0 for no background or 1 for background
+* {seq_thickness} - The thickness of the trunk and descendent branches of the tree (ex. 10)
+* {number of trees} - The number of trees to draw (ex. 3)
+* {background included - 0 for no background or 1 for background
 
 ### More example images:
