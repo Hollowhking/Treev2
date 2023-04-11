@@ -143,17 +143,20 @@ def maketree(axiom, iterations):
 def drawying(curimg):
     #-Init pygame stuff:----
     pygame.init()
-    window_length = 1224
-    window_height = 720
-    #window_length = 800
-    #window_height = 800
+    if (int(sys.argv[3]) == 1):
+        window_length = 1224
+        window_height = 720
+    else:
+        window_length = 800
+        window_height = 800
     screen = pygame.display.set_mode((window_length, window_height))
     pygame.display.set_caption("Generating Trees")
 
     backgroundimg = pygame.image.load('a-banner-with-a-simple-spring-landscape-a-meadow-with-green-grass-and-a-blue-sky-with-clouds.png')
 
     screen.fill(WHITE)
-    screen.blit(backgroundimg, (0,0))
+    if (int(sys.argv[3]) == 1):
+        screen.blit(backgroundimg, (0,0))
     #-----------------------
     #-l systems set up string----
     rule = "F->FF"
@@ -198,7 +201,8 @@ def drawying(curimg):
 
     #make tree:
     screen.fill(WHITE)
-    screen.blit(backgroundimg,(0,0))
+    if (int(sys.argv[3]) == 1):
+        screen.blit(backgroundimg,(0,0))
     for i in range(int(sys.argv[2])):
         posix = random.randint(20,window_length)
         fullstring = maketree(axiom, iterations)
