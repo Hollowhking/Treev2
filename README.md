@@ -1,5 +1,5 @@
 # Welcome to the L-System: Irregular Tree Growth Simulation!
-## This is an implementation of L-Systems developed by Amanda Showler and Joshua Trower
+##### This is an implementation of L-Systems developed by Amanda Showler and Joshua Trower
 
 ### Paper:
 - See the 'CSCI 301 Course Project.pdf' file
