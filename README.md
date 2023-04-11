@@ -10,7 +10,7 @@
 - We recorded a quick walkthrough to show the simulation. The link to view is: https://www.youtube.com/watch?v=K87tXYV7En8
 
 ---
-### Setup
+### Setup:
 To run this simulation project:
 
 ```
@@ -23,4 +23,6 @@ Command-line arguments explained:
 * {number of trees} - The number of trees to draw (ex. 3)
 * {background included - 0 for no background or 1 for background
 
-### More example images:
+---
+### Example images:
+<img src="Tree1.jpeg">
