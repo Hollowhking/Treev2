@@ -75,7 +75,10 @@ def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
     saving_endingofbraches = []
     branchcount = 0
 
+    max_seg_thickness = seg_thickness
     grow_angle = -90
+    text = MyText(BLACK)
+
     for cmd in fullstring:
         if cmd == 'F':
             seg_length = random.randint(15,25)
@@ -84,11 +87,11 @@ def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
             dy = sin(radians(grow_angle))*seg_length
             distance = math.sqrt((((posx+dx)-posx)**2)+(((posy+dy)-posy)**2))
 
-            #screen.fill(WHITE)
-
             curbranch = branch(branchcount, distance, posx, posy, posx+dx, posy+dy)
             listofbranches.append(curbranch)
-            if (seg_thickness < 1):
+
+
+            if (seg_thickness <= 1):
                 curbranch.drawbranch(screen, 2)
             else:
                 curbranch.drawbranch(screen, int(seg_thickness))
@@ -103,7 +106,8 @@ def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
             branchcount += 1
             posx = posx+dx
             posy = posy+dy
-            time.sleep(0.1)
+            time.sleep(0.05)
+            print(seg_thickness,"/",max_seg_thickness)
 
         elif cmd == '+':
             grow_angle += da
@@ -111,12 +115,20 @@ def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
             grow_angle -= da
 
         elif cmd == '[':
-            seg_thickness -= 1
+            if (branchcount*iterations > iterations*5):
+                seg_thickness = seg_thickness-3
             saving_endingofbraches.append((posx,posy))
             saving_angle.append(grow_angle)
         elif cmd == ']':
+            if (branchcount*iterations > iterations*5):
+                seg_thickness = seg_thickness + 2
+                #seg_thickness = max_seg_thickness
+                #print(seg_thickness)
             posx,posy = saving_endingofbraches.pop()
             grow_angle = saving_angle.pop()
+
+        text.draw("Iterations = %f" % iterations, screen, (10,10))
+        text.draw("branch thickness = %f" % seg_thickness, screen, (10,40))
 
 def maketree(axiom, iterations):
     model = derivation(axiom, iterations)  # axiom (initial string), nth iterations
@@ -131,18 +143,17 @@ def maketree(axiom, iterations):
 def drawying(curimg):
     #-Init pygame stuff:----
     pygame.init()
-    #window_length = 1224
-    #window_height = 720
-    window_length = 800
-    window_height = 800
+    window_length = 1224
+    window_height = 720
+    #window_length = 800
+    #window_height = 800
     screen = pygame.display.set_mode((window_length, window_height))
     pygame.display.set_caption("Generating Trees")
 
-    #backgroundimg = pygame.image.load('a-banner-with-a-simple-spring-landscape-a-meadow-with-green-grass-and-a-blue-sky-with-clouds.png')
+    backgroundimg = pygame.image.load('a-banner-with-a-simple-spring-landscape-a-meadow-with-green-grass-and-a-blue-sky-with-clouds.png')
 
     screen.fill(WHITE)
-    #screen.blit(backgroundimg, (0,0))
-    text = MyText(BLACK)
+    screen.blit(backgroundimg, (0,0))
     #-----------------------
     #-l systems set up string----
     rule = "F->FF"
@@ -153,11 +164,11 @@ def drawying(curimg):
     key,value = rule.split("->")
     X_RULES.append(value)
 
-    rule = "X->F-[[X]+X]+F[+FX]-X"
+    rule = "X->F-[[-X]+X]+F[+FX]-X"
     key, value = rule.split("->")
     X_RULES.append(value)
 
-    rule = "X->F[-FX+FXFF][+FXX]"
+    rule = "X->F[-FX+FXF-F][+FXX]"
     key, value = rule.split("->")
     X_RULES.append(value)
 
@@ -187,6 +198,7 @@ def drawying(curimg):
 
     #make tree:
     screen.fill(WHITE)
+    screen.blit(backgroundimg,(0,0))
     for i in range(int(sys.argv[2])):
         posix = random.randint(20,window_length)
         fullstring = maketree(axiom, iterations)
@@ -197,7 +209,7 @@ def drawying(curimg):
     # for i in listofbranches:
     #     print("branch num: ",i.id, " start location: ", i.startx,",",i.starty," end location: ",i.endx,",",i.endy)
     #     pygame.draw.circle(screen, RED, (int(i.endx),int(i.endy)), 2)
-    # text.draw("Iterations = %f" % iterations, screen, (10,10))
+
     while step<80:
         clock.tick(30)
         event = pygame.event.wait()
@@ -215,7 +227,7 @@ def drawying(curimg):
 
 def main():
     curimag = 1
-    for i in range(3):
+    for i in range(1):
         drawying(curimag)
         curimag += 1
     sys.exit(0)
