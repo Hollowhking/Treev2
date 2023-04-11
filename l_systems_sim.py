@@ -101,7 +101,7 @@ def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
     text = MyText(BLACK)
 
     # loop through symbols in string
-    for symbol in rule:
+    for symbol in fullstring:
         if symbol == 'F':
             seg_length = 10
             grow_angle = random.randint(grow_angle-5,grow_angle+5)
