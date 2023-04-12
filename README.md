@@ -25,4 +25,4 @@ Command-line arguments explained:
 
 ---
 ### Example images:
-<img src="Tree1.jpeg">
+<img src="readme_tree.jpeg">
