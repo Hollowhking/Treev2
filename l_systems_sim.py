@@ -52,7 +52,7 @@ class Branch:
         self.tempy = 0
 
     def drawbranch(self, screen, seg_thickness):
-        # draw branch based on equations (1) and (2)
+        # draw branch based on updated state variables
         pygame.draw.line(screen,BLACK,(self.startx,self.starty),(self.endx,self.endy),int(seg_thickness))
 
     def updatebranch(self, newstartx, newstarty, newendx, newendy):
@@ -93,10 +93,10 @@ def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
     # store the state in array
     state_endofbranch = []
     state_angle = []
+    state_thickness = []
 
     # set initial variables
     branchcount = 0
-    max_seg_thickness = seg_thickness
     grow_angle = -90
     text = MyText(BLACK)
 
@@ -104,7 +104,7 @@ def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
     for symbol in fullstring:
         if symbol == 'F':
             seg_length = 10
-            grow_angle = random.randint(grow_angle-5,grow_angle+5)
+            grow_angle = random.randint(grow_angle - 2, grow_angle + 2)
 
             # calculate state of turtle using update rule of equations (1) and (2)
             dx = cos(radians(grow_angle)) * seg_length
@@ -150,26 +150,24 @@ def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
 
         elif symbol == '[':
             # if symbol '[', change thickness and append state of branch
-            if ((branchcount * iterations) > (iterations*5)):
-                seg_thickness = seg_thickness - 3 # equation (3)
-            
+
+            # decrease thickness for new branch
+            seg_thickness -= 1
+
             # state of branch stored as x and y of end of branches and angle
             state_endofbranch.append((posx,posy))
             state_angle.append(grow_angle)
+            state_thickness.append(seg_thickness)
 
         elif symbol == ']':
-            # if symbol ']', change thickness and pop state of branch from list
-            if ((branchcount * iterations) > (iterations * 5)):
-                seg_thickness = seg_thickness + 2 # equation (4)
-                #seg_thickness = max_seg_thickness
-                #print(seg_thickness)
-
+            # if symbol ']', pop state of branch from list
             # replace current state of turtle with state removed
             posx, posy = state_endofbranch.pop()
             grow_angle = state_angle.pop()
+            seg_thickness = state_thickness.pop()
 
         text.draw("Iterations = %f" % iterations, screen, (10,10))
-        text.draw("branch thickness = %f" % seg_thickness, screen, (10,40))
+        text.draw("Branch Thickness = %f" % seg_thickness, screen, (10,40))
 
 # function: maketree
     # parameters: string axiom, int iterations
@@ -193,7 +191,7 @@ def maketree(axiom, iterations):
     # returns: none
     # desc: generates the window for the simulation
 def draw_landscape(current_run):
-    # create pygame window 
+    # create pygame window
     pygame.init()
 
     # change the background size if background image included
@@ -240,15 +238,14 @@ def draw_landscape(current_run):
 
     # define l-system parameters for sim
     axiom = "X"
-    iterations = 2
+    iterations = 3
     da = 20
 
-    # set available area for tree to be drawn
-    posix = window_length/2.
+    # set available area for tree to be drawn with floor operation for int
+    posix = window_length // 2
     posiy = window_height
 
-    
-    # init update variables 
+    # init update variables
     clock = pygame.time.Clock()
     clock_ticks = pygame.time.get_ticks()
     seg_thickness = int(sys.argv[1])
@@ -261,11 +258,18 @@ def draw_landscape(current_run):
     if (int(sys.argv[3]) == 1):
         screen.blit(backgroundimg,(0,0))
 
+    # store location of trees drawn
+    state_location = []
+
     # create number of trees specified in cmd-line argument 2
     for i in range(int(sys.argv[2])):
 
         # find random position for tree to grow based on window_length
-        posix = random.randint(20,window_length)
+        posix = random.randint(20, window_length)
+
+        while (posix in state_location):
+            posix = random.randint(20, window_length)
+            state_location.append(posix)
 
         # get list of elements for creating tree
         fullstring = maketree(axiom, iterations)
