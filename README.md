@@ -15,11 +15,11 @@ To run this simulation project:
 
 ```
 $ python3 -m pip install -U pygame --user
-$ python3 l_systems_sim.py {seq_thickness} {number of trees} {background included}
+$ python3 l_systems_sim.py {iterations} {number of trees} {background included}
 ```
 
 Command-line arguments explained:
-* {seq_thickness} - The thickness of the trunk and descendent branches of the tree (ex. 10)
+* {iterations} - The of iterations of L-systems applied to the tree (ex. 10)
 * {number of trees} - The number of trees to draw (ex. 3)
 * {background included - 0 for no background or 1 for background
 
