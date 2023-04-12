@@ -55,12 +55,6 @@ class Branch:
         # draw branch based on updated state variables
         pygame.draw.line(screen,BLACK,(self.startx,self.starty),(self.endx,self.endy),int(seg_thickness))
 
-    def updatebranch(self, newstartx, newstarty, newendx, newendy):
-        self.startx = newstartx
-        self.starty = newstarty
-        self.endx = newendx
-        self.endy = newendy
-
 # function: derivation
     # parameters: string axiom, int steps
     # returns: string[] derived
@@ -137,7 +131,7 @@ def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
             posx = posx + dx
             posy = posy + dy
 
-            # sleep simulation so change to tree is seen
+            # sleep simulation so change to tree can be observed while growing
             time.sleep(0.05)
 
         elif symbol == '+':
@@ -196,8 +190,8 @@ def draw_landscape(current_run):
 
     # change the background size if background image included
     if (int(sys.argv[3]) == 1):
-        window_length = 1224
-        window_height = 720
+        window_length = 800
+        window_height = 793
     else:
         window_length = 800
         window_height = 800
@@ -205,7 +199,7 @@ def draw_landscape(current_run):
     # set up pygame screen and caption window
     screen = pygame.display.set_mode((window_length, window_height))
     pygame.display.set_caption("Generating Trees")
-    backgroundimg = pygame.image.load('a-banner-with-a-simple-spring-landscape-a-meadow-with-green-grass-and-a-blue-sky-with-clouds.png')
+    backgroundimg = pygame.image.load('background_size.png')
     screen.fill(WHITE)
 
     # add background image if cmd-line arg 3 is equal to 1
@@ -222,9 +216,10 @@ def draw_landscape(current_run):
     key,value = rule.split("->")
     X_RULES.append(value)
 
-    #rule = "X->F-[[-X]+X]+F[+FX]-X"
-    #key, value = rule.split("->")
-    #X_RULES.append(value)
+    # rule commented out since it produced unsatisfactory results
+    # rule = "X->F-[[-X]+X]+F[+FX]-X"
+    # key, value = rule.split("->")
+    # X_RULES.append(value)
 
     rule = "X->F[-FX+FXF-F][+FXX]"
     key, value = rule.split("->")
@@ -248,7 +243,7 @@ def draw_landscape(current_run):
     # init update variables
     clock = pygame.time.Clock()
     clock_ticks = pygame.time.get_ticks()
-    seg_thickness = iterations*5
+    seg_thickness = iterations * 5
     step = 0
 
     # make tree based on parameters
@@ -267,9 +262,11 @@ def draw_landscape(current_run):
         # find random position for tree to grow based on window_length
         posix = random.randint(20, window_length)
 
-        while (posix in state_location):
-            posix = random.randint(20, window_length)
-            state_location.append(posix)
+        # loop until a grow location reached that doesn't have another tree
+        # attempt to get trees to not grow on one another
+        # while (posix in state_location):
+        #     posix = random.randint(20, window_length)
+        #     state_location.append(posix)
 
         # get list of elements for creating tree
         fullstring = maketree(axiom, iterations)
