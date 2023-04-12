@@ -22,7 +22,7 @@ clock = pygame.time.Clock()
 
 """
 Class: MyText
-The MyText class is used to store the text information for the simulation.
+The MyText class is used to store the text information for the simulation. It is a function from Lab 4.
 """
 class MyText():
     def __init__(self, color, background=WHITE, antialias=True, fontname="comicsansms", fontsize=24):
@@ -53,13 +53,7 @@ class Branch:
 
     def drawbranch(self, screen, seg_thickness):
         # draw branch based on updated state variables
-        pygame.draw.line(screen,BLACK,(self.startx,self.starty),(self.endx,self.endy),int(seg_thickness))
-
-    def updatebranch(self, newstartx, newstarty, newendx, newendy):
-        self.startx = newstartx
-        self.starty = newstarty
-        self.endx = newendx
-        self.endy = newendy
+        pygame.draw.line(screen, BLACK, (self.startx, self.starty), (self.endx, self.endy), int(seg_thickness))
 
 # function: derivation
     # parameters: string axiom, int steps
@@ -153,7 +147,7 @@ def drawtree(screen, fullstring, posx, posy, seg_thickness, da, iterations):
 
             # decrease thickness for new branch
             seg_thickness -= 1
-
+            
             # state of branch stored as x and y of end of branches and angle
             state_endofbranch.append((posx,posy))
             state_angle.append(grow_angle)
@@ -191,7 +185,7 @@ def maketree(axiom, iterations):
     # returns: none
     # desc: generates the window for the simulation
 def draw_landscape(current_run):
-    # create pygame window
+    # create pygame window 
     pygame.init()
 
     # change the background size if background image included
@@ -200,7 +194,7 @@ def draw_landscape(current_run):
         window_height = 720
     else:
         window_length = 800
-        window_height = 800
+        window_height = 600
 
     # set up pygame screen and caption window
     screen = pygame.display.set_mode((window_length, window_height))
@@ -222,9 +216,9 @@ def draw_landscape(current_run):
     key,value = rule.split("->")
     X_RULES.append(value)
 
-    #rule = "X->F-[[-X]+X]+F[+FX]-X"
-    #key, value = rule.split("->")
-    #X_RULES.append(value)
+    # rule = "X->F-[[-X]+X]+F[+FX]-X"
+    # key, value = rule.split("->")
+    # X_RULES.append(value)
 
     rule = "X->F[-FX+FXF-F][+FXX]"
     key, value = rule.split("->")
@@ -236,28 +230,20 @@ def draw_landscape(current_run):
 
     SYSRULES[key] = value
 
-    # define l-system parameters for sim
-    axiom = "X"
-    iterations = 3
-    da = 20
-
-    # set available area for tree to be drawn with floor operation for int
-    posix = window_length // 2
-    posiy = window_height
-
-    # init update variables
     clock = pygame.time.Clock()
     clock_ticks = pygame.time.get_ticks()
-    seg_thickness = int(sys.argv[1])
+
+    # define l-system parameters for sim
+    axiom = "X"
+    iterations = int(sys.argv[1])
+    da = 20
+    seg_thickness = iterations * 5
     step = 0
 
-    # make tree based on parameters
-    screen.fill(WHITE)
-
-    # add background again?
-    if (int(sys.argv[3]) == 1):
-        screen.blit(backgroundimg,(0,0))
-
+    # set available area for tree to be drawn
+    posix = window_length / 2.
+    posiy = window_height
+    
     # store location of trees drawn
     state_location = []
 
@@ -267,9 +253,9 @@ def draw_landscape(current_run):
         # find random position for tree to grow based on window_length
         posix = random.randint(20, window_length)
 
-        while (posix in state_location):
-            posix = random.randint(20, window_length)
-            state_location.append(posix)
+        # while (posix in state_location):
+        #     posix = random.randint(20, window_length)
+        #     state_location.append(posix)
 
         # get list of elements for creating tree
         fullstring = maketree(axiom, iterations)
@@ -291,7 +277,6 @@ def draw_landscape(current_run):
             if event.key == pygame.K_ESCAPE or event.unicode == 'q':
                 break
         pygame.display.flip()
-        #print(step)
         step += 1
 
     # save final img of tree
