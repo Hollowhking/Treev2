@@ -3,6 +3,8 @@
 <p align="center">
   <img src="readme_tree.jpeg" width="400" height="400">
 </p>
+
+---
 ### Paper:
 - See the 'CSCI 301 Course Project.pdf' file
 
