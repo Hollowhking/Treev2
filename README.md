@@ -1,6 +1,8 @@
 # Welcome to the L-System: Irregular Tree Growth Simulation!
 ##### This is an implementation of L-Systems developed by Amanda Showler and Joshua Trower
-
+<p align="center">
+  <img src="readme_tree.jpeg" width="400" height="400">
+</p>
 ### Paper:
 - See the 'CSCI 301 Course Project.pdf' file
 
@@ -23,6 +25,3 @@ Command-line arguments explained:
 * {number of trees} - The number of trees to draw (ex. 3)
 * {background included - 0 for no background or 1 for background
 
----
-### Example images:
-<img src="readme_tree.jpeg">
