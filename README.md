@@ -7,7 +7,7 @@
 ---
 
 ### Explanation Video:
-- We recorded a quick walkthrough to show the simulation. The link to view is: https://www.youtube.com/watch?v=K87tXYV7En8
+- We recorded a quick walkthrough to show the simulation. The link to view is: https://youtu.be/kR5OMTsSg74
 
 ---
 ### Setup:
