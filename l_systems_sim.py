@@ -238,7 +238,7 @@ def draw_landscape(current_run):
 
     # define l-system parameters for sim
     axiom = "X"
-    iterations = 3
+    iterations = int(sys.argv[1])
     da = 20
 
     # set available area for tree to be drawn with floor operation for int
@@ -248,7 +248,7 @@ def draw_landscape(current_run):
     # init update variables
     clock = pygame.time.Clock()
     clock_ticks = pygame.time.get_ticks()
-    seg_thickness = int(sys.argv[1])
+    seg_thickness = iterations*5
     step = 0
 
     # make tree based on parameters
